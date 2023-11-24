@@ -336,14 +336,16 @@ void ldapSearch(char * ldap_filter, char * ldap_attributes,	ULONG results_count,
 	// Retrieve PDC
 	////////////////////////////
     
-    dwRet = NETAPI32$DsGetDcNameA(NULL, NULL, NULL, NULL, 0, &pdcInfo);
-    if (ERROR_SUCCESS == dwRet) {
-        if(!hostname){
-            internal_printf("[*] targeting DC: %s\n", pdcInfo->DomainControllerName);       
+    if(hostname == NULL) {
+        dwRet = NETAPI32$DsGetDcNameA(NULL, NULL, NULL, NULL, 0, &pdcInfo);
+        if (ERROR_SUCCESS == dwRet) {
+            if(!hostname){
+                internal_printf("[*] targeting DC: %s\n", pdcInfo->DomainControllerName);       
+            }
+        } else {
+            BeaconPrintf(CALLBACK_ERROR, "Failed to identify PDC, are we domain joined?");
+            goto end;
         }
-    } else {
-        BeaconPrintf(CALLBACK_ERROR, "Failed to identify PDC, are we domain joined?");
-        goto end;
     }
 
 
